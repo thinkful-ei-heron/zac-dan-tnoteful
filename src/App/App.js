@@ -39,22 +39,30 @@ class App extends Component {
             });
     }
 
-  handleAdd = (item, location, data) => {
-    fetch(`${config.API_ENDPOINT}/${location}/${item}`, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'application/json'
-      },
-      data: data
-    })
-
-  }
-
     handleDeleteNote = noteId => {
         this.setState({
             notes: this.state.notes.filter(note => note.id !== noteId)
         });
     };
+
+    handleAddFolder = folder => {
+      this.setState({
+        folders: [
+          ...this.state.folders,
+          folder
+        ]
+      })
+    }
+
+    handleAddNote = note => {
+      this.setState({
+        notes: [
+          ...this.state.notes,
+          note
+        ]
+      })
+    }
+
 
     renderNavRoutes() {
         return (
@@ -97,7 +105,9 @@ class App extends Component {
             notes: this.state.notes,
             folders: this.state.folders,
             deleteNote: this.handleDeleteNote,
-            additem: this.handleAdd
+            additem: this.handleAdd,
+            handleAddFolder: this.handleAddFolder,
+            handleAddNote: this.handleAddNote
         };
 
         return (
