@@ -5,6 +5,8 @@ import NoteListNav from '../NoteListNav/NoteListNav';
 import NotePageNav from '../NotePageNav/NotePageNav';
 import NoteListMain from '../NoteListMain/NoteListMain';
 import NotePageMain from '../NotePageMain/NotePageMain';
+import NewFolder from '../NewFolder/NewFolder';
+import NewNote from '../NewNote/NewNote';
 import {getNotesForFolder, findNote, findFolder} from '../notes-helpers';
 import ApiContext from '../ApiContext';
 import config from '../config';
@@ -37,6 +39,17 @@ class App extends Component {
             });
     }
 
+  handleAdd = (item, location, data) => {
+    fetch(`${config.API_ENDPOINT}/${location}/${item}`, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json'
+      },
+      data: data
+    })
+
+  }
+
     handleDeleteNote = noteId => {
         this.setState({
             notes: this.state.notes.filter(note => note.id !== noteId)
@@ -55,7 +68,7 @@ class App extends Component {
                     />
                 ))}
                 <Route path="/note/:noteId" component={NotePageNav} />
-                <Route path="/add-folder" component={NotePageNav} />
+                <Route path="/add-folder"component={NotePageNav} />
                 <Route path="/add-note" component={NotePageNav} />
             </>
         );
@@ -73,6 +86,8 @@ class App extends Component {
                     />
                 ))}
                 <Route path="/note/:noteId" component={NotePageMain} />
+                <Route path="/add-folder" component={NewFolder} />
+                <Route path="/add-note" component={NewNote} />
             </>
         );
     }
@@ -81,8 +96,10 @@ class App extends Component {
         const value = {
             notes: this.state.notes,
             folders: this.state.folders,
-            deleteNote: this.handleDeleteNote
+            deleteNote: this.handleDeleteNote,
+            additem: this.handleAdd
         };
+
         return (
             <ApiContext.Provider value={value}>
                 <div className="App">
