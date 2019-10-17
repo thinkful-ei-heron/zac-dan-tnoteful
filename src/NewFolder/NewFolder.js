@@ -14,23 +14,50 @@ export default class NewFolder extends React.Component {
 
 
   render(){
-   console.log(this.props.history)
+    const validateDisplay = () => {
+      const { name } = this.state.folders
+      if(name.length < 1) return 'field must not be empty'
+      if(name.length > 256) return 'field too large'
+      return ""
+    }
+
+    const validateFields = (noteObj) => {
+      const { name } = noteObj
+      if(name.length === 0 )return false
+      return true
+    }
+
+    const submitHandler = (e) => {
+      e.preventDefault()
+      const newfolder = {
+        name: e.target.foldername.value,
+      }
+        return validateFields(newfolder) ? handleAdd(JSON.stringify(newfolder)) : alert('Fields are not valid')
+    }
+
+
    const handleAdd = (data) => {
       fetch(`${config.API_ENDPOINT}/folders/`, {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: data
       })
-      .then(res => res.json())
+       .then(res => {
+         if(!res.ok){
+           alert(`${res.status} - ${res.statusText} - Please try agian`)
+         }
+         return res.json()
+       })
       .then(data => {
         this.context.handleAddFolder(data)
         this.props.history.goBack()
+      }).catch(error => {
+        alert(error.message)
       })
 }
 
-    console.log(this.props.history)
   const folderNameChange = (value) => {
     this.setState({
       folders: {
@@ -39,21 +66,22 @@ export default class NewFolder extends React.Component {
     })
   }
     return(
-      <div>
+      <section className="formContainer">
+        <h3 className="error">{validateDisplay()}</h3>
         <form onSubmit={(e) => {
-          e.preventDefault()
-          handleAdd(this.state.folders)
+          submitHandler(e)
             }}>
           <label htmlFor="new_note">New Folder: </label>
           <input 
-            name="new_note" 
+            id="foldername"
+            name="foldername" 
             type="text" 
             value={this.state.folders.name}
             onChange={(e) => folderNameChange(e.target.value)}
           />
           <button>Add</button>
         </form>
-      </div>
+      </section>
     )
   }
 }

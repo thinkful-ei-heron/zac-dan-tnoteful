@@ -1,17 +1,25 @@
 import React from 'react';
 import ApiContext from '../ApiContext'
 import config from '../config';
+import './NewNote.css'
 
 
 
 export default class NewNote extends React.Component {
 
   state = {
-    notes: {
-      name: '',
-      content: ''
+    name: {
+      value: ''
+    },
+    content: {
+      value: ''
+    },
+    folderId: {
+      value: ''
     }
   }
+
+  
 
   static contextType = ApiContext
 
@@ -24,13 +32,38 @@ export default class NewNote extends React.Component {
         },
         body: data
       })
-      .then(res => res.json())
+      .then(res => {
+         if(!res.ok){
+           alert(`${res.status} - ${res.statusText} - Please try agian`)
+         }
+         return res.json()
+       })
+
       .then(data => {
           this.context.handleAddNote(data)
           this.props.history.goBack()
+      }).catch(error => {
+        alert(error)
       })
 
     }
+
+    const validateDisplay = () => {
+      const { name, content } = this.state
+      if(name.value.length < 1 || content.value.length < 1) return 'field must not be empty'
+      if(name.value.length > 256 || content.value.length > 500) return 'field too large'
+      return ""
+    }
+
+    const validateFields = (noteObj) => {
+      const { name, content, folderId } = noteObj
+      if(name.length === 0 )return false
+      if(content.length === 0)return false
+      if(folderId.length === 0)return false
+      return true
+      
+    }
+
 
     const submitHandler = (e) => {
       e.preventDefault()
@@ -40,43 +73,51 @@ export default class NewNote extends React.Component {
         folderId: e.target.folderId.value,
         modified: new Date()
       }
-      postNewNote(JSON.stringify(newNote))
+        return validateFields(newNote) ? postNewNote(JSON.stringify(newNote)) : alert('Fields are not valid')
     }
 
-    console.log(this.props)
     return (
-      <div>
+      <section className="formContainer">
+        <h3 className="error">{validateDisplay()}</h3>
         <form 
           onSubmit={(e) => submitHandler(e)}>
           <label htmlFor="new_note">Name: </label>
           <input 
             id="name" 
             type="text" 
-            value={this.state.notes.name} 
-            onChange={(e) => this.setState({notes: {name: e.target.value}})}
+            value={this.state.name.value}
+            onChange={(e) => {
+              this.setState({name: {
+                value: e.target.value}})
+              validateDisplay()
+            }}
           />
           <label htmlFor="new_note">Content: </label>
           <textarea 
             id="content" 
             cols="30" 
             rows="10" 
-            value={this.state.notes.content}
-            onChange={(e) => this.setState({notes: {content: e.target.value}})}
+            value={this.state.content.value}
+            onChange={(e) => {
+              this.setState({content: {
+              value: e.target.value}})
+              validateDisplay()
+              }}
           ></textarea>
-          <select id="folderId" name="">
-            <option value="null">Choose a folder</option>
+          <select 
+            id="folderId" 
+            onChange={(e) => {
+              this.setState({folderId: {value: e.target.value}})
+            }}
+          >
+            <option value=''>Choose a folder</option>
             {this.context.folders.map(folder => {
-              return <option value={`${folder.id}`} >{`${folder.name}`}</option>
+              return <option value={`${folder.id}`} key={folder.id} >{`${folder.name}`}</option>
             })}
           </select>
           <button>Add</button>
         </form>
-      </div>
+      </section>
     )
   }
-
 }
-       // "name": "Dogs",
-       // "modified": "2019-01-03T00:00:00.000Z",
-       // "folderId": "b0715efe-ffaf-11e8-8eb2-f2801f1b9fd1",
-

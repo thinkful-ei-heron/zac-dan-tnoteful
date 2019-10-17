@@ -1,0 +1,35 @@
+label {
+  color: white;
+}
+
+input, textarea, label, form button {
+  display: block;
+  margin: 5px auto;
+}
+
+input, textarea {
+  border-radius: 5px;
+  border: 1px solid lightgray;
+}
+
+form button {
+  margin-top: 10px;
+  border-radius: 50%;
+  border: none;
+  padding: 25px;
+  font-size: 1.5rem;
+}
+
+form button:hover {
+  background-color: green;
+  color: white;
+}
+
+.formContainer {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.error {
+  color: red;
+}

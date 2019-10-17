@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {Route, Link} from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import ErrorPage from '../error/ErrorPage';
 import NoteListNav from '../NoteListNav/NoteListNav';
 import NotePageNav from '../NotePageNav/NotePageNav';
 import NoteListMain from '../NoteListMain/NoteListMain';
 import NotePageMain from '../NotePageMain/NotePageMain';
 import NewFolder from '../NewFolder/NewFolder';
 import NewNote from '../NewNote/NewNote';
-import {getNotesForFolder, findNote, findFolder} from '../notes-helpers';
 import ApiContext from '../ApiContext';
 import config from '../config';
 import './App.css';
@@ -112,6 +112,7 @@ class App extends Component {
 
         return (
             <ApiContext.Provider value={value}>
+              <ErrorPage>
                 <div className="App">
                     <nav className="App__nav">{this.renderNavRoutes()}</nav>
                     <header className="App__header">
@@ -122,6 +123,7 @@ class App extends Component {
                     </header>
                     <main className="App__main">{this.renderMainRoutes()}</main>
                 </div>
+              </ErrorPage>
             </ApiContext.Provider>
         );
     }
